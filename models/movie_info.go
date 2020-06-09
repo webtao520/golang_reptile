@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego/orm"
+	//_ "github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -30,71 +31,55 @@ type MovieInfo struct {
 
 func init() {
 	orm.Debug = true // 是否开启调试模式 调试模式下会打印出sql语句
-	orm.RegisterDataBase("default", "mysql", "root:123@tcp(127.0.0.1:3306)/test?charset=utf8", 30)
+	// 参数四 设置最大的空闲连接 注册一个别名为default 的数据库 ，作为默认使用
+	orm.RegisterDataBase("default", "mysql", "root:root123@tcp(127.0.0.1)/test?charset=utf8", 30)
 	orm.RegisterModel(new(MovieInfo))
 	db = orm.NewOrm()
-}
-
-func AddMovie(movie_info *MovieInfo) (int64, error) {
-	movie_info.Id = 0
-	id, err := db.Insert(movie_info)
-	return id, err
-}
-
-func GetMovieDirector(movieHtml string) string {
-	if movieHtml == "" {
-		return ""
-	}
-
-	reg := regexp.MustCompile(`<a.*?rel="v:directedBy">(.*?)</a>`)
-	result := reg.FindAllStringSubmatch(movieHtml, -1)
-
-	if len(result) == 0 {
-		return ""
-	}
-
-	return string(result[0][1])
 }
 
 func GetMovieName(movieHtml string) string {
 	if movieHtml == "" {
 		return ""
 	}
-
 	reg := regexp.MustCompile(`<span\s*property="v:itemreviewed">(.*?)</span>`)
 	result := reg.FindAllStringSubmatch(movieHtml, -1)
-
 	if len(result) == 0 {
 		return ""
 	}
+	//fmt.Printf("%T", result[0][1])
+	//return string(result[0][1])
+	return result[0][1]
+}
 
+func GetMovieDirector(movieHtml string) string {
+	if movieHtml == "" {
+		return ""
+	}
+	// MustCompile解析并返回一个正则表达式。如果成功返回，该Regexp就可用于匹配文本
+	reg := regexp.MustCompile(`<a.*?rel="v:directedBy">(.*?)</a>`)
+	result := reg.FindAllStringSubmatch(movieHtml, -1)
+	if len(result) == 0 {
+		return ""
+	}
 	return string(result[0][1])
 }
 
 func GetMovieMainCharacters(movieHtml string) string {
+	if movieHtml == "" {
+		return ""
+	}
 	reg := regexp.MustCompile(`<a.*?rel="v:starring">(.*?)</a>`)
 	result := reg.FindAllStringSubmatch(movieHtml, -1)
-
 	if len(result) == 0 {
 		return ""
 	}
-
 	mainCharacters := ""
 	for _, v := range result {
+		//fmt.Println("======>", v[1])
 		mainCharacters += v[1] + "/"
 	}
 
 	return strings.Trim(mainCharacters, "/")
-}
-
-func GetMovieGrade(movieHtml string) string {
-	reg := regexp.MustCompile(`<strong.*?property="v:average">(.*?)</strong>`)
-	result := reg.FindAllStringSubmatch(movieHtml, -1)
-
-	if len(result) == 0 {
-		return ""
-	}
-	return string(result[0][1])
 }
 
 func GetMovieGenre(movieHtml string) string {
@@ -144,4 +129,20 @@ func GetMovieUrls(movieHtml string) []string {
 	}
 
 	return movieSets
+}
+
+func AddMovie(movie_info *MovieInfo) (int64, error) {
+	movie_info.Id = 0
+	id, err := db.Insert(movie_info)
+	return id, err
+}
+
+func GetMovieGrade(movieHtml string) string {
+	reg := regexp.MustCompile(`<strong.*?property="v:average">(.*?)</strong>`)
+	result := reg.FindAllStringSubmatch(movieHtml, -1)
+
+	if len(result) == 0 {
+		return ""
+	}
+	return string(result[0][1])
 }
