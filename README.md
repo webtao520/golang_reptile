@@ -1,4 +1,7 @@
 # golang_reptile
+
+golang 爬虫项目&数据采集
+
 开发电脑系统：mac
 开发语言版本：go1.14.3
 涉及框架版本：Beego
