@@ -8,5 +8,5 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
-	beego.Router("/crawl_movie", &controllers.CrawlMovieController{}, "*:CrawlMovie")
+	beego.Router("/reptile", &controllers.CrawlMovieController{}, "*:CrawlMovie")
 }
