@@ -10,4 +10,4 @@ Redis版本： Redis 2.6.12
    go get github.com/astaxie/beego
    go get github.com/beego/bee
    
- 运行 bee run 即可运行项目 打开浏览器访问http://127.0.0.1:8080/crawl_movie即可启动爬虫
+ 运行 bee run 即可运行项目 打开浏览器访问http://127.0.0.1:8888/crawl_movie即可启动爬虫
